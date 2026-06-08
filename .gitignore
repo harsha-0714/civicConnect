@@ -1,0 +1,28 @@
+﻿# Environment Variables
+.env
+.env.local
+.env.*
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Node.js
+node_modules/
+dist/
+build/
+
+# Logs
+*.log
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ML Models
+*.pt
+*.pth

@@ -1,0 +1,21 @@
+# Run these in Google Colab to train the model:
+
+!pip install ultralytics roboflow
+
+# Download dataset from Roboflow (replace with your project)
+from roboflow import Roboflow
+rf = Roboflow(api_key="YOUR_API_KEY")
+project = rf.workspace("civic-issues").project("pothole-garbage-detection")
+dataset = project.version(1).download("yolov8")
+
+# Train
+from ultralytics import YOLO
+model = YOLO('yolov11n.pt')
+results = model.train(data=f'{dataset.location}/data.yaml', epochs=100, imgsz=640, batch=16, device=0)
+
+# Export for deployment (smaller file)
+model.export(format='onnx')  # Or keep .pt for ultralytics
+
+# Download trained model
+from google.colab import files
+files.download('runs/detect/train/weights/best.pt')
