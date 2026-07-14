@@ -1,3 +1,4 @@
+const classifyImage = require("../services/classificationService");
 const Issue = require("../models/Issue");
 
 // Create Issue
