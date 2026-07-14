@@ -1,5 +1,6 @@
-const classifyImage = require("../services/classificationService");
 const Issue = require("../models/Issue");
+const classifyImage = require("../services/classificationService");
+const uploadToCloudinary = require("../services/cloudinaryService");
 
 // Create Issue
 const createIssue = async (req, res) => {
@@ -13,13 +14,27 @@ const createIssue = async (req, res) => {
       ward,
     } = req.body;
 
-    const imageUrl = req.file ? req.file.path : "";
+    let imageUrl = "";
+    let aiResult = null;
+
+    if (req.file) {
+      // AI Classification
+      aiResult = await classifyImage(req.file.buffer);
+
+      // Upload Image to Cloudinary
+      const uploadedImage = await uploadToCloudinary(req.file.buffer);
+
+      imageUrl = uploadedImage.secure_url;
+    }
+
     const issue = await Issue.create({
       title,
       description,
-      category,
       ward,
       imageUrl,
+
+      category: aiResult?.category || category,
+      confidence: aiResult?.confidence || 0,
 
       gps: {
         type: "Point",
@@ -36,17 +51,14 @@ const createIssue = async (req, res) => {
     });
 
   } catch (err) {
-
     console.error(err);
 
     res.status(500).json({
       success: false,
       message: err.message,
     });
-
   }
 };
-
 // Get All Issues
 
 const getAllIssues = async (req, res) => {

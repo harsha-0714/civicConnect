@@ -1,35 +1,28 @@
 const axios = require("axios");
 const FormData = require("form-data");
 
-async function classifyImage(imageBuffer) {
+const classifyImage = async (buffer) => {
+  try {
+    const form = new FormData();
 
-    try {
+    form.append("file", buffer, {
+      filename: "image.jpg",
+      contentType: "image/jpeg",
+    });
 
-        const form = new FormData();
+    const response = await axios.post(
+      `${process.env.ML_SERVICE}/classify`,
+      form,
+      {
+        headers: form.getHeaders(),
+      }
+    );
 
-        form.append("file", imageBuffer, {
-            filename: "image.jpg",
-            contentType: "image/jpeg"
-        });
-
-        const response = await axios.post(
-            process.env.ML_SERVICE + "/classify",
-            form,
-            {
-                headers: form.getHeaders()
-            }
-        );
-
-        return response.data;
-
-    } catch (error) {
-
-        console.log("AI Service Unavailable");
-
-        return null;
-
-    }
-
-}
+    return response.data;
+  } catch (err) {
+    console.log("⚠️ AI Service Unavailable");
+    return null;
+  }
+};
 
 module.exports = classifyImage;
