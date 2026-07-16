@@ -3,8 +3,14 @@ const classifyImage = require("../services/classificationService");
 const uploadToCloudinary = require("../services/cloudinaryService");
 
 // Create Issue
+
 const createIssue = async (req, res) => {
   try {
+    console.log("========== REQUEST BODY ==========");
+    console.log(req.body);
+
+    console.log("========== REQUEST FILE ==========");
+    console.log(req.file);
     const {
       title,
       description,
@@ -42,8 +48,9 @@ const createIssue = async (req, res) => {
       },
 
       createdBy: req.user._id,
+      
     });
-
+console.log(req.file.mimetype);
     res.status(201).json({
       success: true,
       message: "Issue created successfully",
@@ -51,7 +58,8 @@ const createIssue = async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error(err.response?.data || err);
+    console.error(err.response?.status);
 
     res.status(500).json({
       success: false,
