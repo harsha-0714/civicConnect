@@ -2,6 +2,7 @@ const Issue = require("../models/Issue");
 const classifyImage = require("../services/classificationService");
 const uploadToCloudinary = require("../services/cloudinaryService");
 
+
 // Create Issue
 
 const createIssue = async (req, res) => {
@@ -122,9 +123,34 @@ const getMyIssues = async (req, res) => {
   }
 
 };
+const predictIssue = async (req, res) => {
 
+    try {
+
+        if (!req.file) {
+            return res.status(400).json({
+                message: "Image is required"
+            });
+        }
+
+        const result = await classifyImage(req.file.buffer);
+
+        res.json(result);
+
+    }
+
+    catch (err) {
+
+        res.status(500).json({
+            message: err.message
+        });
+
+    }
+
+};
 module.exports = {
   createIssue,
   getAllIssues,
   getMyIssues,
+  predictIssue,
 };
