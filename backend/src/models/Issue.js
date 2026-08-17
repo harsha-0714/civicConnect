@@ -64,6 +64,13 @@ const issueSchema = new mongoose.Schema(
       default: 0,
     },
 
+    upvotedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

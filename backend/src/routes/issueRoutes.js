@@ -1,7 +1,6 @@
 const express = require("express");
 const upload = require("../middleware/uploadMiddleware");
 const router = express.Router();
-const { predictIssue } = require("../controllers/issueController");
 
 const protect = require("../middleware/authMiddleware");
 
@@ -9,6 +8,8 @@ const {
   createIssue,
   getAllIssues,
   getMyIssues,
+  predictIssue,
+  upvoteIssue,
 } = require("../controllers/issueController");
 router.post(
     "/predict",
@@ -26,5 +27,7 @@ router.post(
 router.get("/", getAllIssues);
 
 router.get("/my", protect, getMyIssues);
+
+router.patch("/:id/upvote", protect, upvoteIssue);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 import { formatConfidence, formatDate, statusStyles } from "../utils/issues";
 
-function IssueCard({ issue }) {
+function IssueCard({ issue, onUpvote, upvoting = false }) {
   const confidence = formatConfidence(issue.confidence);
 
   return (
@@ -68,6 +68,23 @@ function IssueCard({ issue }) {
             </span>
           </p>
         )}
+
+        <div className="flex items-center justify-between border-t border-slate-100 pt-4">
+          <p className="text-sm font-semibold text-slate-700">
+            {issue.upvotes || 0} upvotes
+          </p>
+
+          {onUpvote && (
+            <button
+              type="button"
+              onClick={() => onUpvote(issue._id)}
+              disabled={upvoting}
+              className="rounded-md border border-teal-200 bg-teal-50 px-3 py-2 text-sm font-semibold text-teal-800 transition hover:bg-teal-100 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {upvoting ? "Upvoting" : "Upvote"}
+            </button>
+          )}
+        </div>
       </div>
     </article>
   );

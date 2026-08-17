@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import IssueCard from "../components/IssueCard";
 import IssueMap from "../components/IssueMap";
@@ -19,6 +20,7 @@ function IssueFeed() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
   const [category, setCategory] = useState("All");
+  const [upvotingId, setUpvotingId] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -78,6 +80,38 @@ function IssueFeed() {
       wards: Object.keys(countBy(issues, (issue) => issue.ward)).length,
     };
   }, [issues]);
+
+  const handleUpvote = async (issueId) => {
+    try {
+      setUpvotingId(issueId);
+
+      const res = await api.patch(`/issues/${issueId}/upvote`);
+      const updatedIssue = res.data.data;
+
+      if (updatedIssue?._id) {
+        setIssues((currentIssues) =>
+          currentIssues.map((issue) =>
+            issue._id === updatedIssue._id ? { ...issue, ...updatedIssue } : issue,
+          ),
+        );
+      }
+
+      if (res.data.upvoted) {
+        toast.success("Issue upvoted");
+      } else {
+        toast("You have already upvoted this issue");
+      }
+    } catch (err) {
+      const message =
+        err.response?.status === 401
+          ? "Login to upvote issues."
+          : err.response?.data?.message || "Unable to upvote issue.";
+
+      toast.error(message);
+    } finally {
+      setUpvotingId("");
+    }
+  };
 
   return (
     <main>
@@ -211,7 +245,12 @@ function IssueFeed() {
         {!loading && !error && filteredIssues.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {filteredIssues.map((issue) => (
-              <IssueCard key={issue._id} issue={issue} />
+              <IssueCard
+                key={issue._id}
+                issue={issue}
+                onUpvote={handleUpvote}
+                upvoting={upvotingId === issue._id}
+              />
             ))}
           </div>
         )}

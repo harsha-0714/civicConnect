@@ -132,7 +132,17 @@ function ReportIssue() {
 
     try {
       setLoading(true);
-      await api.post("/issues", data);
+      const res = await api.post("/issues", data);
+
+      if (res.data.duplicate) {
+        toast.success(res.data.message);
+        setForm(initialForm);
+        setImage(null);
+        setPrediction(null);
+        navigate("/");
+        return;
+      }
+
       toast.success("Issue reported successfully");
       setForm(initialForm);
       setImage(null);
