@@ -25,13 +25,13 @@ const createIssue = async (req, res) => {
     let aiResult = null;
 
     if (req.file) {
-      // AI Classification
       aiResult = await classifyImage(req.file.buffer);
 
       // Upload Image to Cloudinary
       const uploadedImage = await uploadToCloudinary(req.file.buffer);
 
       imageUrl = uploadedImage.secure_url;
+      console.log(req.file.mimetype);
     }
 
     const issue = await Issue.create({
@@ -51,7 +51,6 @@ const createIssue = async (req, res) => {
       createdBy: req.user._id,
       
     });
-console.log(req.file.mimetype);
     res.status(201).json({
       success: true,
       message: "Issue created successfully",
